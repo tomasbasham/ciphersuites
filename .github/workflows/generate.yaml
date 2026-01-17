@@ -1,0 +1,56 @@
+---
+name: generate
+on:
+  schedule:
+  # Run weekly on Monday at 03:00 UTC
+  - cron: 0 3 * * 1
+  workflow_dispatch:
+permissions:
+  contents: write
+  pull-requests: write
+jobs:
+  generate:
+    name: Generate cipher suite definitions
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    - uses: actions/setup-go@v6
+      with:
+        go-version: stable
+    - name: Run generator
+      run: |
+        go generate ./...
+    - name: Check for changes
+      id: git-check
+      run: |
+        # Compare ignoring the "Generated at:" line.
+        git diff -U0 ciphersuites.gen.go | \
+          grep '^[+-]' | \
+          grep -v '^[+-]// Generated at:' | \
+          grep -v '^[\+-]\{3\} [ab]/' > /tmp/meaningful_diff.txt || true
+
+        if [ -s /tmp/meaningful_diff.txt ]; then
+          echo "Meaningful changes detected:"
+          cat /tmp/meaningful_diff.txt
+          echo "changed=true" >> $GITHUB_OUTPUT
+        fi
+    - name: Create Pull Request
+      if: steps.git-check.outputs.changed == 'true'
+      uses: peter-evans/create-pull-request@v6
+      with:
+        commit-message: "chore: update cipher suite definitions"
+        title: Update cipher suite definitions from IANA
+        body: |
+          This PR updates the cipher suite definitions from the upstream API.
+
+          **Source**: https://www.iana.org/assignments/tls-parameters/tls-parameters-4.csv
+          **Generated**: ${{ github.event.repository.updated_at }}
+
+          Please review the changes and ensure all tests pass before merging.
+        branch: update-cipher-suites
+        delete-branch: true
+        labels: |
+          automated
+          dependencies

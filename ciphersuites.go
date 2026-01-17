@@ -1,3 +1,4 @@
+//go:generate go run cmd/generator/main.go
 package ciphersuites
 
 // CipherSuite represents the security attributes associated to a cipher suite.
