@@ -1,7 +1,7 @@
 # ciphersuites
 
-This README outlines the details of collaborating on this Go module. A short
-introduction of this module could easily go here.
+Package `ciphersuites` provides a cipher suite list and security
+classifications.
 
 ## Prerequisites
 
