@@ -1,4 +1,4 @@
-# ciphersuites
+# ciphersuites ![policy](https://github.com/tomasbasham/ciphersuites/workflows/policy/badge.svg)
 
 Package `ciphersuites` provides a cipher suite list and security
 classifications.
