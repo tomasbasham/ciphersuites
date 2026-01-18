@@ -1,4 +1,4 @@
-# ciphersuites
+# ciphersuites ![test](https://github.com/tomasbasham/ciphersuites/workflows/test/badge.svg)
 
 A Go module providing TLS cipher suite classifications based on current security
 standards. It categorises cipher suites into four security levels - recommended,
